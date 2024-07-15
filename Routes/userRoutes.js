@@ -23,11 +23,11 @@ router.get("/User/:id",authenticateAccessToken,isAdmin, async (req,res)=>{
 });
 
 
-router.post("/create",authenticateAccessToken,isAdmin, async (req,res)=>{
+router.post("/userCreate",authenticateAccessToken,isAdmin, async (req,res)=>{
     try{
 
-        const {Titel,Content,Completed}=req.body;
-        const user= new User({Titel,Content,Completed});
+        const {userName,email,passwordHash}=req.body;
+        const user= new User({userName,email,passwordHash});
         const newUser = await user.save();
         res.json(newUser);
 
@@ -42,9 +42,9 @@ router.put("/userPut/:id",authenticateAccessToken,isAdmin,async (req,res)=>{
 
     try {
         const upUser= await User.findByIdAndUpdate(req.params.id,{
-            Titel:req.body.Title,
-            Content:req.body.Content,
-            Completed:req.body.Completed,
+            userName:req.body.userName,
+            email:req.body.email,
+            passwordHash:req.body.passwordHash,
         },{new:true,runValidators:true});
         
         if(!upUser)
