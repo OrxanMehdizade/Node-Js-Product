@@ -13,7 +13,7 @@ function authenticateAccessToken(req,res,next){
         if(err) return res.sendStatus(403);
 
         res.locals.user=user;
-        res.user=user.id;
+        req.user=user.id;
         next();
     });
 }

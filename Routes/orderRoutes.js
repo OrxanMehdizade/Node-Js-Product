@@ -1,22 +1,24 @@
 const express=require("express");
 const router=express.Router();
-const orderItems=require("../models/orderItem");
+const Order=require("../models/orderItem");
 const Products=require("../models/product");
 const {authenticateAccessToken}=require("../middleware/authenticateAccessToken");
-const isAdmin = require("../middleware/isAdmin");
+const {isAdmin} = require("../middleware/isAdmin");
 
-router.get("/", async (req,res)=>{
+router.get("/",authenticateAccessToken, async (req,res)=>{
     try{
-        const orderItem= await orderItems.find();
-        res.json(orderItem);
+        const order= await Order.find({owner:req.user}).populate("products");
+        res.json(order);
     }catch(err){
         res.status(500).json({message:err.message});
     }
 });
 
-router.get("/Order/:id",authenticateAccessToken,async (req,res)=>{
+router.get("/Order/:id",authenticateAccessToken,isAdmin,async (req,res)=>{
     try{
-        const neworderItem= await orderItems.findById(req.params.id);
+        const neworderItem= await Order.findById(req.params.id)
+            .populate("products")
+            .populate("owner","userName email");
         res.json(neworderItem);
     }catch(err){
         res.status(500).json({message:err.message});

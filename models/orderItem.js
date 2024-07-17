@@ -1,13 +1,12 @@
-const mongoose= require('mongoose');
-const Products=require("./product")
+const mongoose= require("mongoose");
 
 const orderSchema= new mongoose.Schema({
-    user:{type:mongoose.Schema.Types.ObjectId,ref:'User',required: true},
+
     products:[
         {
             product: {
                 type: mongoose.Schema.Types.ObjectId,
-                ref: 'Product',
+                ref: "Product",
                 required: true
             },
             quantity: {
@@ -17,6 +16,9 @@ const orderSchema= new mongoose.Schema({
             }
         }
     ],
+
+    owner:{type:mongoose.Schema.Types.ObjectId,ref:"User",required: true},
+
     totalPrice: {
         type: Number,
         required: true
@@ -27,6 +29,6 @@ const orderSchema= new mongoose.Schema({
     },
 });
 
-const Order= mongoose.model('Order', orderSchema);
+const Order= mongoose.model("Order", orderSchema);
 
-module.exports=Order;
+module.exports = Order;

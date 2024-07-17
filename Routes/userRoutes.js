@@ -2,7 +2,7 @@ const express=require("express");
 const router=express.Router();
 const User=require("../models/user");
 const {authenticateAccessToken}=require("../middleware/authenticateAccessToken");
-const isAdmin = require("../middleware/isAdmin");
+const {isAdmin} = require("../middleware/isAdmin");
 
 router.get("/",authenticateAccessToken,isAdmin, async (req,res)=>{
     try{
@@ -26,8 +26,8 @@ router.get("/User/:id",authenticateAccessToken,isAdmin, async (req,res)=>{
 router.post("/userCreate",authenticateAccessToken,isAdmin, async (req,res)=>{
     try{
 
-        const {userName,email,passwordHash}=req.body;
-        const user= new User({userName,email,passwordHash});
+        const {userName,email,isAdmin,passwordHash}=req.body;
+        const user= new User({userName,email,isAdmin,passwordHash});
         const newUser = await user.save();
         res.json(newUser);
 
@@ -41,10 +41,11 @@ router.put("/userPut/:id",authenticateAccessToken,isAdmin,async (req,res)=>{
 
 
     try {
+        const passwordHash=await bcrypt.hash(password,10);
         const upUser= await User.findByIdAndUpdate(req.params.id,{
             userName:req.body.userName,
             email:req.body.email,
-            passwordHash:req.body.passwordHash,
+            passwordHash:passwordHash,
         },{new:true,runValidators:true});
         
         if(!upUser)

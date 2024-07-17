@@ -2,7 +2,7 @@ const express=require("express");
 const router=express.Router();
 const Products=require("../models/product");
 const {authenticateAccessToken}=require("../middleware/authenticateAccessToken");
-const isAdmin = require("../middleware/isAdmin");
+const {isAdmin} = require("../middleware/isAdmin");
 
 router.get("/", async (req,res)=>{
     try{

@@ -1,10 +1,8 @@
 const User = require('../models/user');
 
-async function isAdmin(req,res,next){
+const isAdmin = async (req,res,next)=>{
     try{
-        const userId=req.user.id;
-        
-        const user = await User.findById(userId);
+        const user = await User.findById(req.user);
 
         if(!user) return res.sendStatus(404); 
 
@@ -16,4 +14,4 @@ async function isAdmin(req,res,next){
     }
 }
 
-module.exports=isAdmin;
+module.exports={isAdmin};
