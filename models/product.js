@@ -8,7 +8,7 @@ const productSchema= new mongoose.Schema({
     category:{type:String, required:true, enum:["Texnologiya","Elektronika"]},
     currency:{type:String, enum:["$", "₼", "€"], default:"₼"},
     stock:{type:Number, required:true},
-});
+},{timestamps:true});
 
 const Product= mongoose.model("Product", productSchema);
 

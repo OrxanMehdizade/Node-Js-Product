@@ -1,34 +1,41 @@
 const express=require("express");
 const router=express.Router();
-const Order=require("../models/orderItem");
-const Products=require("../models/product");
 const {authenticateAccessToken}=require("../middleware/authenticateAccessToken");
 const {isAdmin} = require("../middleware/isAdmin");
+const Order=require("../models/orderItem");
+const Products=require("../models/product");
 
+// Get all orders 
 router.get("/",authenticateAccessToken, async (req,res)=>{
     try{
-        const order= await Order.find({owner:req.user}).populate("products");
+        const orders= await Order.find({owner:req.user}).populate("products");
+        res.json(orders);
+    }catch(err){
+        res.status(500).json({message:err.message});
+    }
+});
+
+// Get a specific order by ID
+router.get("/order/:id",authenticateAccessToken,isAdmin,async (req,res)=>{
+    try{
+        const order= await Order.findById(req.params.id)
+            .populate("products")
+            .populate("owner","userName email");
+        
+        if (!order) {
+            return res.status(404).json({ message: "Order not found" });
+        } 
         res.json(order);
     }catch(err){
         res.status(500).json({message:err.message});
     }
 });
 
-router.get("/Order/:id",authenticateAccessToken,isAdmin,async (req,res)=>{
-    try{
-        const neworderItem= await Order.findById(req.params.id)
-            .populate("products")
-            .populate("owner","userName email");
-        res.json(neworderItem);
-    }catch(err){
-        res.status(500).json({message:err.message});
-    }
-});
 
-
-router.post('/orderCreate', authenticateAccessToken, isAdmin, async (req, res) => {
+// Create a new order
+router.post('/orderCreate', authenticateAccessToken, async (req, res) => {
     try {
-        const { user, products } = req.body;
+        const { products } = req.body;
         let totalPrice = 0;
         for (let item of products) {
             const product = await Products.findById(item.product);
@@ -39,7 +46,7 @@ router.post('/orderCreate', authenticateAccessToken, isAdmin, async (req, res) =
         }
 
         const order = new Order({
-            user,
+            owner: req.user,
             products,
             totalPrice,
         });
@@ -52,14 +59,14 @@ router.post('/orderCreate', authenticateAccessToken, isAdmin, async (req, res) =
 });
 
 
-
+// Update an order by ID
 router.put('/orderPut/:id', authenticateAccessToken, isAdmin, async (req, res) => {
     try {
-        const { user, products } = req.body;
+        const { products } = req.body;
         
         let totalPrice = 0;
         for (let item of products) {
-            const product = await Products.findById(item.product);
+            const product = await Product.findById(item.product);
             if (!product) {
                 return res.status(404).json({ message: 'Product not found' });
             }
@@ -69,7 +76,6 @@ router.put('/orderPut/:id', authenticateAccessToken, isAdmin, async (req, res) =
         const updatedOrder = await Order.findByIdAndUpdate(
             req.params.id,
             {
-                user,
                 products,
                 totalPrice,
             },
@@ -86,15 +92,17 @@ router.put('/orderPut/:id', authenticateAccessToken, isAdmin, async (req, res) =
     }
 });
 
+
+// Delete an order by ID
 router.delete("/orderDelete/:id",authenticateAccessToken,isAdmin, async (req,res)=>{
     try {
-        const orderItem = orderItems.findByIdAndDelete(req.params.id);
+        const order = await Order.findByIdAndDelete(req.params.id);
 
-        if (index === -1) {
-            return res.status(404).json({ message: 'Product tapilmadi' });
+        if (!order) {
+            return res.status(404).json({ message: 'Order not found' });
         }
 
-        res.json(orderItem);
+        res.json({ message: "Order deleted successfully" });
     } catch (err) {
         res.status(500).json({ message: err.message });
     }
