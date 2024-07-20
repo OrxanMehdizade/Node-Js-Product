@@ -7,9 +7,16 @@ const User=require("../models/user");
 
 // Get all users
 router.get("/",authenticateAccessToken,isAdmin, async (req,res)=>{
+    /*Pagination*/ 
+    const pages= parseInt(req.query.page) || 1;
+    const userItem_count= parseInt(req.query.item_count) || 10;
+    const skip=(pages-1)*userItem_count;
+    const totalItems=await User.countDocuments();
+    const totalPages=Math.ceil(totalItems/userItem_count);
+
     try{
-        const users= await User.find();
-        res.json(users);
+        const users= await User.find().skip(skip).limit(userItem_count);
+        res.json({users,pages,totalPages});
     }catch(err){
         res.status(500).json({message:err.message});
     }

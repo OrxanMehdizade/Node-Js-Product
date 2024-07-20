@@ -6,9 +6,16 @@ const Products=require("../models/product");
 
 // Get all products
 router.get("/", async (req,res)=>{
+    /*Pagination*/ 
+    const pages= parseInt(req.query.page) || 1;
+    const productItem_count= parseInt(req.query.item_count) || 10;
+    const skip=(pages-1)*productItem_count;
+    const totalItems=await Products.countDocuments();
+    const totalPages=Math.ceil(totalItems/productItem_count);
+
     try{
-        const products= await Products.find();
-        res.json(products);
+        const products= await Products.find().skip(skip).limit(productItem_count);
+        res.json({products,pages,totalPages});
     }catch(err){
         res.status(500).json({message:err.message});
     }

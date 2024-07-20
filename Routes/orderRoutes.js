@@ -7,9 +7,15 @@ const Products=require("../models/product");
 
 // Get all orders 
 router.get("/",authenticateAccessToken, async (req,res)=>{
+    /*Pagination*/ 
+    const pages= parseInt(req.query.page) || 1;
+    const ordertItem_count= parseInt(req.query.item_count) || 10;
+    const skip=(pages-1)*ordertItem_count;
+    const totalItems=await Products.countDocuments();
+    const totalPages=Math.ceil(totalItems/ordertItem_count);
     try{
-        const orders= await Order.find({owner:req.user}).populate("products");
-        res.json(orders);
+        const orders= await Order.find({owner:req.user}).skip(skip).limit(ordertItem_count).populate("products");
+        res.json({orders,pages,totalPages});
     }catch(err){
         res.status(500).json({message:err.message});
     }
@@ -66,7 +72,7 @@ router.put('/orderPut/:id', authenticateAccessToken, isAdmin, async (req, res) =
         
         let totalPrice = 0;
         for (let item of products) {
-            const product = await Product.findById(item.product);
+            const product = await Products.findById(item.product);
             if (!product) {
                 return res.status(404).json({ message: 'Product not found' });
             }
