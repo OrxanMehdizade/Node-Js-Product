@@ -85,6 +85,25 @@ router.delete("/productDelete/:id",authenticateAccessToken,isAdmin, async (req,r
     }
 });
 
-
+// Product Search
+router.get("/search/:searchThem",async (req,res)=>{
+    try{
+        const searchValue=req.params.searchThem;
+        const results = await Products.find(
+            {
+                $or:[
+                    {title:{$regex:searchValue, $options:"i"}},
+                    
+                    {description:{$regex:searchValue, $options:"i"}},
+                    
+                ]
+    
+            }
+        );
+        res.json(results);
+    }catch(err){
+        res.status(400).json({message:err.message});
+    }
+});
 
 module.exports=router;

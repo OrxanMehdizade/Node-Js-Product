@@ -86,5 +86,25 @@ router.delete("/userDelete/:id",authenticateAccessToken,isAdmin, async (req,res)
 });
 
 
+// User Search
+router.get("/search/:searchThem",authenticateAccessToken,isAdmin,async (req,res)=>{
+    try{
+        const searchValue=req.params.searchThem;
+        const results = await User.find(
+            {
+                $or:[
+                    {userName:{$regex:searchValue, $options:"i"}},
+                    
+                    {email:{$regex:searchValue, $options:"i"}},
+                    
+                ]
+    
+            }
+        );
+        res.json(results);
+    }catch(err){
+        res.status(400).json({message:err.message});
+    }
+});
 
 module.exports=router;
