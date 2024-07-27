@@ -40,8 +40,8 @@ router.get("/user/:id", authenticateAccessToken, isAdmin, async (req, res) => {
 router.post("/userCreate",authenticateAccessToken,isAdmin, async (req,res)=>{
     try{
 
-        const {userName,email,isAdmin,passwordHash}=req.body;
-        const user= new User({userName,email,isAdmin,passwordHash});
+        const {firstName,lastName,email,isAdmin,passwordHash}=req.body;
+        const user= new User({firstName,lastName,email,isAdmin,passwordHash});
         const newUser = await user.save();
         res.status(201).json(newUser);
     }catch(err){
@@ -52,11 +52,12 @@ router.post("/userCreate",authenticateAccessToken,isAdmin, async (req,res)=>{
 // Update user by ID
 router.put("/userPut/:id",authenticateAccessToken,isAdmin,async (req,res)=>{
 
-
+    
     try {
         const passwordHash=await bcrypt.hash(password,10);
         const upUser= await User.findByIdAndUpdate(req.params.id,{
-            userName:req.body.userName,
+            firstName:req.body.firstName,
+            lastName:req.body.lastName,
             email:req.body.email,
             passwordHash:passwordHash,
         },{new:true,runValidators:true});
@@ -93,7 +94,9 @@ router.get("/search/:searchThem",authenticateAccessToken,isAdmin,async (req,res)
         const results = await User.find(
             {
                 $or:[
-                    {userName:{$regex:searchValue, $options:"i"}},
+                    {firstName:{$regex:searchValue, $options:"i"}},
+
+                    {lastName:{$regex:searchValue, $options:"i"}},
                     
                     {email:{$regex:searchValue, $options:"i"}},
                     

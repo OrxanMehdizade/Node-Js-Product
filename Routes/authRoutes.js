@@ -9,11 +9,11 @@ const jwt=require("jsonwebtoken");
 
 router.post("/register", async (req,res)=>{
     try{
-        const{userName,email,isAdmin,password}=req.body;
+        const{firstName,lastName,email,isAdmin,password}=req.body;
         
         const passwordHash=await bcrypt.hash(password,10);
         
-        const user=new User({userName,email,isAdmin,passwordHash});
+        const user=new User({firstName,lastName,email,isAdmin,passwordHash});
         
         await user.save();
         
