@@ -8,6 +8,12 @@ const productSchema= new mongoose.Schema({
     category:{type:String, required:true, enum:["Texnologiya","Elektronika"]},
     currency:{type:String, enum:["$", "₼", "€"], default:"₼"},
     stock:{type:Number, required:true},
+    itemOptions: [{
+        size: { type: String, enum: ["S", "M", "L", "XL", "XXL"], required: true },
+        color: { type: String, required: true },
+        quantity: { type: Number, required: true }
+    }]
+
 },{timestamps:true});
 
 const Product= mongoose.model("Product", productSchema);
