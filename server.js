@@ -17,21 +17,21 @@ app.use(express.json());
 app.use(cors());
 
 
-// if(cluster.isMaster)
-// {
-//     for(let i=0; i<cpuNum;i++){
-        
-//     }
-//     cluster.on("exit",(worker)=>{
-//         console. log(`worker with pid ${worker.process.pid} died`);
-//         cluster.fork();
-//     });
+if(cluster.isMaster)
+{
+    for(let i=0; i<cpuNum;i++){
+        cluster.fork();
+    }
+    cluster.on("exit",(worker)=>{
+        console. log(`worker with pid ${worker.process.pid} died`);
+        cluster.fork();
+    });
 
-// }else{
-//     app.listen(port, () => {
-//         console.log(`Server running on ${process.pid} @${port}`);
-//     });
-// }
+}else{
+    app.listen(port, () => {
+        console.log(`Server running on ${process.pid} @${port}`);
+    });
+}
 
 
 mongoose
@@ -47,7 +47,7 @@ app.use("/orders", orderRoutes);
 app.use("/baskets", basketRoutes);
 
 
-app.listen(port, () => {
-    console.log(`Server running on port ${port}`);
-});
+// app.listen(port, () => {
+//     console.log(`Server running on port ${port}`);
+// });
 
