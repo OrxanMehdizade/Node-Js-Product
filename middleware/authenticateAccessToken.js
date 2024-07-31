@@ -10,7 +10,7 @@ function authenticateAccessToken(req,res,next){
     if(!token) return res.sendStatus(401);
 
     jwt.verify(token,ACCESS_TOKEN_SECRET,(err,user)=>{
-        if(err) return res.sendStatus(403);
+        if(err) return res.sendStatus(401);
 
         res.locals.user=user;
         req.user=user.id;

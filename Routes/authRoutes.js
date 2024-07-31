@@ -49,7 +49,7 @@ router.post("/refresh",async(req,res)=>{
     if(!refreshToken) return res.sendStatus(401);
 
     jwt.verify(refreshToken,REFRESH_TOKEN_SECRET,(err,user)=>{
-        if(err) return res.sendStatus(403);
+        if(err) return res.sendStatus(401);
 
         const accessToken=generateAccessToken(user);
         
