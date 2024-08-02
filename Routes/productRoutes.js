@@ -22,7 +22,7 @@ router.get("/", async (req, res) => {
 });
 
 // Get a specific product by ID
-router.get("/product/:id", authenticateAccessToken, async (req, res) => {
+router.get("/product/:id", async (req, res) => {
     try {
         const product = await Products.findById(req.params.id);
         if (!product) {
