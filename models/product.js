@@ -10,7 +10,7 @@ const productSchema= new mongoose.Schema({
     stock:{type:Number, required:true},
     itemOptions: [{
         size: { type: String, enum: ["S", "M", "L", "XL", "XXL"], required: true },
-        color: { type: String, required: true },
+        color: { type:[String], required: true },
         quantity: { type: Number, required: true }
     }]
 
