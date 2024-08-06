@@ -9,11 +9,11 @@ const User=require("../models/user");
 // Get basket all
 router.get("/",authenticateAccessToken, async (req,res)=>{
     try{
-        const basket= await User.findById(req.user).populate("basket");
-        if (!basket) {
+        const data= await User.findById(req.user).populate("basket");
+        if (!data) {
             return res.status(404).json({ message: "User not found" });
         }
-        res.json(basket);
+        res.json(data.basket);
     }catch(err){
         res.status(500).json({message:err.message});
     }
